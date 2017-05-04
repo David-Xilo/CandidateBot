@@ -1,5 +1,7 @@
 /CandidateBot/nbproject/*
 
+project.*
+
 # Logs and databases #
 ######################
 *.log
