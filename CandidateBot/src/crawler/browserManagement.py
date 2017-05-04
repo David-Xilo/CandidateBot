@@ -15,8 +15,9 @@ def openNewBrowser(url='http://www.google.com'):
     browser.get(url)
     return browser
 
-def openNewTab(url='http://www.google.com', name=None):
-    browser.execute_script("window.open(%s, 'new_window')"%url)
+def openNewTab(browser, url='http://www.google.com', name=None):
+    command = "window.open(" + "'" + url + "'" + ", 'new_window')"
+    browser.execute_script(command)
     if name != None:
         windowsNames[name] = browser.current_window_handle
 
@@ -31,7 +32,8 @@ def seleniumGoogleSearch(browser, searchTerm):
     search.send_keys(searchTerm)
     search.send_keys(Keys.RETURN)
 
-browser = openNewBrowser()
-seleniumGoogleSearch(browser,"david")
-time.sleep(3)
-browser.quit()
+#browser = openNewBrowser()
+#seleniumGoogleSearch(browser,"david")
+#openNewTab(browser)
+#time.sleep(3)
+#browser.quit()
