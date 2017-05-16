@@ -38,8 +38,33 @@ def changeWindow(browser, name):
     else:
         raise NameError('Not valid name')
 
-def searchElementByXPath(browser, path):
-    return WebDriverWait(browser, 120).until(EC.visibility_of_element_located((By.XPATH, path)))
+#def searchElementByXPath(browser, path):
+#    return WebDriverWait(browser, 120).until(EC.visibility_of_element_located((By.XPATH, path)))
+
+def waitForElementLocated(browser, how, identifier, delay = 30):
+    if how == 'link':
+        WebDriverWait(browser, delay).until(EC.presence_of_element_located((By.LINK_TEXT, identifier)))
+    elif how == 'id':
+        WebDriverWait(browser, delay).until(EC.presence_of_element_located((By.ID, identifier)))
+    elif how == 'xpath':
+        WebDriverWait(browser, delay).until(EC.presence_of_element_located((By.XPATH, identifier)))
+    elif how == 'class':
+        WebDriverWait(browser, delay).until(EC.presence_of_element_located((By.CLASS_NAME, identifier)))
+    elif how == 'name':
+        WebDriverWait(browser, delay).until(EC.presence_of_element_located((By.NAME, identifier)))
+    else:
+        raise NameError('invalid manner')
+
+def waitForElementClickable(browser, how, identifier, delay = 30):
+    if how == 'id':
+        WebDriverWait(browser, delay).until( EC.element_to_be_clickable( (By.ID, identifier) ) )
+
+
+def getLinksFromElements(elements):
+    links = []
+    for it in elements:
+        links.append(it.get_attribute('href'))
+    return links
 
 #def searchElementByID(browser, ID):
 #    return WebDriverWait(browser, 120).until( EC.element_to_be_clickable( (By.ID, ID) ) )

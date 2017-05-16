@@ -43,3 +43,4 @@ Thumbs.db
 ############
 *.google-cookie
 
+/oldCode/nbproject/private/
