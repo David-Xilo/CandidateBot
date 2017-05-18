@@ -117,3 +117,24 @@ browser.execute_script("document.getElementsByClassName('apply-job')[0].click();
 time.sleep(4)
 #browser.quit()
 print('done')
+
+main_window_handle = browser.current_window_handle
+browser.execute_script("document.getElementsByClassName('google-picker')[0].click();")
+    signin_window_handle = None
+    
+    while not signin_window_handle:
+        for handle in browser.window_handles:
+            if handle != main_window_handle:
+                signin_window_handle = handle
+                break
+    browser.switch_to.window(signin_window_handle)
+    un = browser.find_element_by_id('identifierId')
+    un.send_keys(us.username['GMail'])
+    #WebElement.sendKeys(Keys.RETURN)
+    un.send_keys(Keys.RETURN)
+    time.sleep(3)
+    pw = browser.find_element_by_class_name('whsOnd')
+    pw.send_keys(us.password['GMail'])
+    pw.send_keys(Keys.RETURN)
+    time.sleep(3)
+    browser.execute_script("document.getElementsByClassName('RveJvd')[0].click();")
