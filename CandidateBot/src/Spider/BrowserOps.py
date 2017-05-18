@@ -59,9 +59,15 @@ def getLinksFromElements(elements):
         links.append(it.get_attribute('href'))
     return links
 
-def isElementPresent(browser, locator):
+def isElementPresent(browser, locator, how='class'):
     try:
-        browser.find_element_by_class_name(locator)
+        if how == 'class':
+            browser.find_element_by_class_name(locator)
+        elif how == 'link':
+            browser.find_element_by_link_text(locator)
+        else:
+            print('bad call at "isElementPresent"')
+            raise NoSuchElementException
     except NoSuchElementException:
         return False
     return True

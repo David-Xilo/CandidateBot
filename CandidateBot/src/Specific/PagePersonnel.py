@@ -68,7 +68,6 @@ def getJobDetails(browser):
     details['location'] = getLoc(browser, "summary-detail-field")
     details['company'] = 'PagePersonnel'#getDetail(browser, "field-name-field-job-desc-company")
     details['type'] = getContractType(browser, "summary-detail-field")
-    print(getDetail(browser, "field-name-field-job-contract-type"))
     return details
     
 def getDetail(browser, identifier):
@@ -142,20 +141,21 @@ def applyToAllUrls(browser, reflst, us):
     res = getJobSearchResults(browser)
     links = BO.getLinksFromElements(res)
     for link in links:
-        browser.get( url=link)
+        browser.get(link)
         details = getJobDetails(browser)
-        details['path'] = us.personal['LogPath']
+        details['path'] = us.personal['LogPathPagePersonnel']
         if str(details['reference']) not in reflst:
             applyToJob(browser, us)
             details['method'] = 'CV'
             DL.writeLogToCSV(details)
+            reflst.add(details['reference'])
     browser.get(jobsearchurl)
     time.sleep(3)
 
 def getBlockJobsAndApply():
     us = User('f')
-    if os.path.isfile(us.personal['LogPath']):
-        reflst = DL.getReferencesFromLog(us.personal['LogPath'])
+    if os.path.isfile(us.personal['LogPathPagePersonnel']):
+        reflst = DL.getReferencesFromLog(us.personal['LogPathPagePersonnel'])
     else:
         reflst = []
     browser = BO.openNewBrowser(MAINURL)
