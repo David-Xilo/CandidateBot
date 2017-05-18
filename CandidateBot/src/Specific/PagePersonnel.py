@@ -7,7 +7,8 @@ import Spider.BrowserOps as BO
 from InformationManagement.Credentials import User
 from selenium.webdriver.common.keys import Keys
 import time
-import subprocess
+import InformationManagement.DataLog as DL
+import os
 
 MAINURL = 'http://www.pagepersonnel.ch/'
 
@@ -65,10 +66,7 @@ def getJobDetails(browser):
     details['reference'] = ref
     details['contact'] = getDetail(browser, "field-name-field-job-consultant")
     details['location'] = getLoc(browser, "summary-detail-field")
-    print(getDetail(browser, "field-name-field-job-location-txt"))
-    details['company'] = getDetail(browser, "field-name-field-job-desc-company")
-    details['description'] = getDetail(browser, "field-name-field-job-desc-role")
-    details['site'] = 'PagePersonnel'
+    details['company'] = 'PagePersonnel'#getDetail(browser, "field-name-field-job-desc-company")
     details['type'] = getContractType(browser, "summary-detail-field")
     print(getDetail(browser, "field-name-field-job-contract-type"))
     return details
@@ -95,7 +93,6 @@ def getContractType(browser, identifier):
         if ele.text == 'Contract Type:':
             el = element.find_element_by_xpath('.//span[@class = "summary-detail-field-value"]')
             return el.text
-
 
 def loginLinkedIn(browser, us):
     BO.waitForElementLocated(browser, "session_key-oauth2SAuthorizeForm")
@@ -140,20 +137,46 @@ def applyToJob(browser, us, linkedIn=False):
     else:
         applyThroughCV(browser, us)
 
-browser = BO.openNewBrowser(MAINURL)
-getBlockJobs(browser, 'Technology')
-toggleFilters(browser)
-selectLanguage(browser)
-res = getJobSearchResults(browser)
+def applyToAllUrls(browser, reflst, us):
+    jobsearchurl = browser.current_url
+    res = getJobSearchResults(browser)
+    links = BO.getLinksFromElements(res)
+    for link in links:
+        browser.get( url=link)
+        details = getJobDetails(browser)
+        details['path'] = us.personal['LogPath']
+        if str(details['reference']) not in reflst:
+            applyToJob(browser, us)
+            details['method'] = 'CV'
+            DL.writeLogToCSV(details)
+    browser.get(jobsearchurl)
+    time.sleep(3)
 
-links = BO.getLinksFromElements(res)
-us = User('f')
-browser.get( url=links[0])
-applyToJob(browser, us)
-#dets = getJobDetails(browser)
+def getBlockJobsAndApply():
+    us = User('f')
+    if os.path.isfile(us.personal['LogPath']):
+        reflst = DL.getReferencesFromLog(us.personal['LogPath'])
+    else:
+        reflst = []
+    browser = BO.openNewBrowser(MAINURL)
+    getBlockJobs(browser, 'Technology')
+    toggleFilters(browser)
+    selectLanguage(browser)
+    #we are now in page 1 of the results
+    #for each page I wish to apply to every job
+    applyToAllUrls(browser, reflst, us)
+    while BO.isElementPresent(browser,'show-more-pager'):
+        element = browser.find_element_by_class_name('show-more-pager')
+        element = element.find_element_by_tag_name('a')
+        url = element.get_attribute('href')
+        browser.get(url)
+        applyToAllUrls(browser, reflst, us)
+        time.sleep(2)
+    time.sleep(5)
+    #browser.close()
 
-#for d in dets.items():
-#    print(d)
+getBlockJobsAndApply()
+
 
 print('done')
     

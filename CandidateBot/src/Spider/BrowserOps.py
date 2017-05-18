@@ -5,6 +5,7 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.common.exceptions import NoSuchElementException
 
 
 def openNewBrowser(url='http://www.google.com/'):
@@ -58,3 +59,9 @@ def getLinksFromElements(elements):
         links.append(it.get_attribute('href'))
     return links
 
+def isElementPresent(browser, locator):
+    try:
+        browser.find_element_by_class_name(locator)
+    except NoSuchElementException:
+        return False
+    return True
