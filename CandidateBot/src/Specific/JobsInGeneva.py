@@ -68,7 +68,7 @@ def applyThroughCV(browser, us):
     browser.find_element_by_id('JOBG837').send_keys(us.personal['CVPath'])
     time.sleep(3)
     browser.execute_script("document.getElementById('buttonApply').click();")
-    time.sleep(5)
+    time.sleep(2)
     #DONE
     
 def applyToJob(browser, us, linkedIn=False):
@@ -95,7 +95,8 @@ def applyToAllUrls(browser, reflst, us):
                 details['method'] = 'CV'
                 DL.writeLogToCSV(details)
                 reflst.add(details['reference'])
-    #browser.get(jobsearchurl)
+                time.sleep(2)
+    browser.get(jobsearchurl)
     time.sleep(3)
 
 def getBlockJobsAndApply():
@@ -103,14 +104,14 @@ def getBlockJobsAndApply():
     if os.path.isfile(us.personal['LogPathJobsInGeneva']):
         reflst = DL.getReferencesFromLog(us.personal['LogPathJobsInGeneva'])
     else:
-        reflst = []
+        reflst = set()
     #here, unlike in pagepersonnel, the mainurl
     #contains already every job
     browser = BO.openNewBrowser(MAINURL)
     #we are now in page 1 of the results
     #for each page I wish to apply to every job
     applyToAllUrls(browser, reflst, us)
-    while BO.isElementPresent(browser,'Next', link):
+    while BO.isElementPresent(browser,'Next', 'link'):
         element = browser.find_element_by_link_text('Next')
         url = element.get_attribute('href')
         browser.get(url)

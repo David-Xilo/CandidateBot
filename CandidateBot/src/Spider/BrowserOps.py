@@ -65,6 +65,8 @@ def isElementPresent(browser, locator, how='class'):
             browser.find_element_by_class_name(locator)
         elif how == 'link':
             browser.find_element_by_link_text(locator)
+        elif how == 'id':
+            browser.find_element_by_id(locator)
         else:
             print('bad call at "isElementPresent"')
             raise NoSuchElementException
